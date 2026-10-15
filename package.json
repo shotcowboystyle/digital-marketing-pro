@@ -30,6 +30,7 @@
     "eu-ai-act"
   ],
   "openclaw": {
+    "extensions": ["./index.js"],
     "skills": ["./skills"],
     "compat": {
       "pluginApi": ">=2026.3.24-beta.2"
