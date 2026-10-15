@@ -144,5 +144,22 @@ class TestSkillsDirectoryDeclaredCorrectly(unittest.TestCase):
                             f"OpenClaw skills path {path!r} must be a directory")
 
 
+class TestPackageJsonExtensionsAreCodeEntries(unittest.TestCase):
+    """`package.json` `openclaw.extensions` lists runtime entry FILES the loader imports.
+
+    v3.35.8 shipped `"extensions": ["./skills/"]`; OpenClaw 2026.10.3 refuses the install with
+    "extension entry failed plugin directory boundary checks: ./skills/". This plugin is
+    skills-only (skills come from `openclaw.skills`), so it needs no extension entry at all.
+    """
+
+    def test_every_extension_entry_is_a_code_file(self):
+        pkg = json.loads((PLUGIN_ROOT / "package.json").read_text(encoding="utf-8"))
+        for entry in pkg.get("openclaw", {}).get("extensions", []):
+            self.assertTrue(entry.endswith((".js", ".mjs", ".cjs", ".ts")),
+                            f"openclaw.extensions entry {entry!r} must be a code file, not a directory")
+            self.assertTrue((PLUGIN_ROOT / entry).is_file(),
+                            f"openclaw.extensions entry {entry!r} does not exist as a file")
+
+
 if __name__ == "__main__":
     unittest.main()
